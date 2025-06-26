@@ -529,12 +529,12 @@ QString KLineal::indicatorText() const
     return i18n( "%1 px", qRound(len*pixelRatio()) );
   } else {
     float lengthMM = (length() / 96) * 25.4;
-    int len = xy / (96 / 25.4);
+    float len = xy / (96.f / 25.4);
 
     if ( !mLeftToRight ) {
       len = lengthMM - len;
     }
-    return i18n( "%1 mm", len );
+    return i18n( "%.1f mm", len );
   }
 }
 
