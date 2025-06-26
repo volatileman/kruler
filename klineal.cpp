@@ -511,7 +511,7 @@ QPoint KLineal::localCursorPos() const
 {
   // For some reason mapFromGlobal( QCursor::pos() ) thinks the ruler is at 0, 0 at startup.
   // compute the position ourselves to avoid that.
-  return QCursor::pos() - pos();
+  return QCursor::pos();
 }
 
 inline qreal KLineal::pixelRatio() const
@@ -528,12 +528,13 @@ QString KLineal::indicatorText() const
     int len = mLeftToRight ? xy + 1 : length() - xy;
     return i18n( "%1 px", qRound(len*pixelRatio()) );
   } else {
-    int len = ( xy * 100.f ) / length();
+    float lengthMM = (length() / 96) * 25.4;
+    int len = xy / (96 / 25.4);
 
     if ( !mLeftToRight ) {
-      len = 100 - len;
+      len = lengthMM - len;
     }
-    return i18n( "%1%", len );
+    return i18n( "%1 mm", len );
   }
 }
 
@@ -684,15 +685,16 @@ void KLineal::drawScale( QPainter &painter )
       drawScaleTick( painter, x, len );
     }
   } else {
-    float step = longLen / 100.f;
+    float stepMM = 96.f / 25.4;
+
     int len;
 
-    for ( int i = 0; i <= 100; ++i ) {
-      int x = (int)( i * step );
+    for ( int i = 0; i <= longLen; ++i ) {
+      int x = (int)( i * stepMM );
 
-      if ( i % 10 == 0 && i != 0 && i != 100 ) {
+      if ( i % 10 == 0 && i != 0 ) {
         int value = mLeftToRight ? i : ( 100 - i );
-        const QString units = QString::asprintf( "%d%%", value );
+        const QString units = QString::asprintf( "%d", value );
         drawScaleText( painter, x, units );
         len = MEDIUM2_TICK_SIZE;
       } else {
